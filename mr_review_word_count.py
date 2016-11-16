@@ -57,7 +57,7 @@ class CountPeriodWord(MRJob):
         for word, count in raw_counts.iteritems():
             if count >= MINIMUM_OCCURENCES:
                 filtered_counts[word] = count
-
+        filtered_counts = sorted(filtered_counts, key=lambda x:x[0])
         yield period, filtered_counts
 
     def steps(self):
