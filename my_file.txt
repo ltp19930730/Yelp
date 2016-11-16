@@ -1,0 +1,1 @@
+A job is defined by a class that inherits from MRJob. This class contains methods that define the steps of your job.
