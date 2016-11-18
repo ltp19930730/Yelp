@@ -5,6 +5,7 @@ import nltk
 
 # choose a business to analysis
 BUSINESS_ID = "lliksv-tglfUz1T3B3vgvA"
+MINIMUM_OCCURENCES = 20
 def words(text):
     for  word in text.split():
         # normalize words by lowercasing and dropping non-alpha
@@ -15,18 +16,17 @@ def words(text):
 
 
 def dates(date):
-    # split the date in to a map
+    #split the date in to a map
     year, month, day = map(int, date.split('-'))
-    # delete the reviews that before year 2011
-    if year in range(2011,2017):
-        if month in range(1,4):
-            yield year,'season1'
-        elif month in range(4,7):
-            yield year,'season2'
-        elif month in range(7,10):
-            yield year,'seaons3'
-        else:
-            yield year,'season4'
+    if month in range(1,4):
+        yield year,'season1'
+    elif month in range(4,7):
+        yield year,'season2'
+    elif month in range(7,10):
+        yield year,'seaons3'
+    else:
+        yield year,'season4'
+
 
 class CountPeriodWord(MRJob):
 
@@ -53,20 +53,13 @@ class CountPeriodWord(MRJob):
             nouns = [word for (word, pos) in nltk.pos_tag(tokenized) if is_noun(pos)]
 
             for noun in nouns:
-                if (noun not in exit_noun):
-                    yield period,(noun, 1)
-                    exit_noun.add(noun)
+                if noun == 'Nam':
+                    yield period,review
 
 
-    def count_word_reducer(self, period, word_count):
-        raw_counts = {}
-        for word, count in word_count:
-            raw_counts[word] = raw_counts.get(word, 0) + count
-        filtered_counts = {}
-        for word, count in raw_counts.iteritems():
-                filtered_counts[word] = count
-
-        yield period, filtered_counts
+    def count_word_reducer(self, period, reviews):
+        for review in reviews:
+            yield period,review
 
     def steps(self):
         return [MRStep(mapper=self.review_period_mapper,
