@@ -14,13 +14,18 @@ def words(text):
         if normed:
             yield normed
 
+
 def dates(date):
     #split the date in to a map
     year, month, day = map(int, date.split('-'))
-    if month in range(1,7):
+    if month in range(1,4):
         yield year,'season1'
-    else:
+    elif month in range(4,7):
         yield year,'season2'
+    elif month in range(7,10):
+        yield year,'seaons3'
+    else:
+        yield year,'season4'
 
 class CountPeriodWord(MRJob):
 
